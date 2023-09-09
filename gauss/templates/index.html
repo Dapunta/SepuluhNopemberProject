@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gauss-Jordan Generator</title>
+    <style>
+        @media screen and (max-width: 360px) {
+            body {
+                font-family: Arial, sans-serif;}
+
+            table {
+                width: 80%; /* Lebar tabel */
+                border-collapse: collapse;
+                margin: 20px auto; /* Meletakkan tabel di tengah layar secara horizontal */
+            }
+
+            th, td {
+                padding: 10px;
+                border: 1px solid #808080;
+            }
+
+            td input[type="number"] {
+                width: 100%;
+                padding: 5px;
+                border: 1px solid #ddd;
+                box-sizing: border-box; /* Menghindari input menjorok keluar */
+            }
+
+            th {
+                background-color: #f2f2f2;
+            }
+
+            /* Membuat sel dapat diedit */
+            td input[type="number"] {
+                background-color: #f9f9f9;
+            }
+            .button-container {
+                margin-top: 10px;
+                text-align: center;}
+            .button-custom {
+                background-color: #f9f9f9;
+                border-color: #ccc;
+                color: #000000;
+                padding: 8px 15px;
+                text-align: center;
+                display: inline-block;
+                font-size: 14px;
+                margin: 0;
+                cursor: pointer;
+                border-radius: 5px;}
+            .centering-title-h1 {
+                margin-top: 40px;
+                font-size: 25px;
+                display: flex;
+                justify-content: center;}
+            .centering-title-h2 {
+                margin-top: -15px;
+                margin-bottom: 30px;
+                font-size: 18px;
+                display: flex;
+                justify-content: center;}
+        }
+    </style>
+</head>
+<body>
+    <h1 class="centering-title-h1">Gauss-Jordan Generator</h1>
+    <h1 class="centering-title-h2">Ordo 3x4</h1>
+    <form action="/" method="POST">
+        <table>
+            <thead>
+                <tr>
+                    <th>X</th>
+                    <th>Y</th>
+                    <th>Z</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><input type="number" name="x1"></td>
+                    <td><input type="number" name="y1"></td>
+                    <td><input type="number" name="z1"></td>
+                    <td><input type="number" name="v1"></td>
+                </tr>
+                <tr>
+                    <td><input type="number" name="x2"></td>
+                    <td><input type="number" name="y2"></td>
+                    <td><input type="number" name="z2"></td>
+                    <td><input type="number" name="v2"></td>
+                </tr>
+                <tr>
+                    <td><input type="number" name="x3"></td>
+                    <td><input type="number" name="y3"></td>
+                    <td><input type="number" name="z3"></td>
+                    <td><input type="number" name="v3"></td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="button-container">
+            <button class="button-custom" type="submit" name="act" value="dump">Check</button>
+        </div>
+    </form>
+    <pre>
+{% for line in output %}{{ line }}
+{% endfor %}
+    </pre>
+</body>
+</html>
