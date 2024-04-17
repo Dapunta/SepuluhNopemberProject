@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <sys/wait.h>
 #include <sys/stat.h>
 
 #define MAX_PATH_LEN 256
@@ -21,7 +22,6 @@ void Task_A()
     SetPath();
     ExtractZip();
     printf("Done.\n");
-    return 0;
 }
 
 // Mengatur Direktori
@@ -77,11 +77,6 @@ void Download()
             fprintf(stderr, "Download Gagal\n");
             exit(EXIT_FAILURE);
         }
-        // Pindahkan File Zip
-        char *const mvArgs[] = {"mv", "task_sisop.zip", current_path, NULL};
-        execvp("mv", mvArgs);
-        perror("execvp");
-        exit(EXIT_FAILURE);
     }
     else
     {
@@ -124,4 +119,5 @@ void ExtractZip()
 int main()
 {
     Task_A();
+    return(0);
 }
