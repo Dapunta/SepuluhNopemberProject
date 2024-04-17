@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <sys/wait.h>
+#include <sys/stat.h>
 
 #define MAX_PATH_LEN 256
 
@@ -15,55 +15,24 @@ void Task_A();
 void SetPath();
 void Download();
 void ExtractZip();
-void Move();
 
 void Task_A()
 {
     SetPath();
-    pid_t child_pid = fork();
-    if (child_pid == 0)
-    {
-        Download();
-        exit(0);
-    }
-    else if (child_pid > 0)
-    {
-        int status;
-        waitpid(child_pid, &status, 0); // Menunggu anak proses untuk menyelesaikan unduhan
-        child_pid = fork();
-        if (child_pid == 0)
-        {
-            ExtractZip();
-            exit(0);
-        }
-        else if (child_pid > 0)
-        {
-            waitpid(child_pid, &status, 0); // Menunggu anak proses untuk menyelesaikan ekstraksi
-
-            Move();
-        }
-        else
-        {
-            perror("fork");
-            exit(EXIT_FAILURE);
-        }
-    }
-    else
-    {
-        perror("fork");
-        exit(EXIT_FAILURE);
-    }
-
+    ExtractZip();
     printf("Done.\n");
     return 0;
 }
 
+// Mengatur Direktori
 void SetPath()
 {
 
+    // Workspace File Utama
     struct stat st;
     strcpy(current_path, ".");
 
+    // Membuat Folder task_sisop Jika Belum Ada
     sprintf(old_folder_path, "%s/task_sisop", current_path);
     if (stat(old_folder_path, &st) == -1)
     {
@@ -75,6 +44,7 @@ void SetPath()
         Download();
     }
 
+    // Membuat Folder task Jika Belum Ada
     sprintf(new_folder_path, "%s/task", current_path);
     if (stat(new_folder_path, &st) == -1)
     {
@@ -86,6 +56,7 @@ void SetPath()
     }
 }
 
+// Download Dan Simpan File Zip
 void Download()
 {
     pid_t pid = fork();
@@ -119,6 +90,7 @@ void Download()
     }
 }
 
+// Ekstrak Dan Simpan File Hasil Ekstraksi
 void ExtractZip()
 {
     pid_t pid = fork();
@@ -145,27 +117,6 @@ void ExtractZip()
     else
     {
         perror("Gagal Fork");
-        exit(EXIT_FAILURE);
-    }
-}
-
-void Move()
-{
-    pid_t child_pid = fork();
-    if (child_pid == 0)
-    {
-        execl("/bin/mv", "mv", old_folder_path, new_folder_path, (char *)NULL);
-        perror("execl");
-        exit(EXIT_FAILURE);
-    }
-    else if (child_pid > 0)
-    {
-        int status;
-        waitpid(child_pid, &status, 0); // Menunggu anak proses untuk menyelesaikan pemindahan
-    }
-    else
-    {
-        perror("fork");
         exit(EXIT_FAILURE);
     }
 }
