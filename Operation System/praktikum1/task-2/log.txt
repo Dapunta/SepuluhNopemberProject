@@ -1,0 +1,4 @@
+24/03/24 12:28:43 LOGIN: SUCCESS Ahmad is logged in
+24/03/24 12:29:13 LOGIN: ERROR Failed login attempt on Ahmad
+24/03/24 12:34:11 REGISTER: SUCCESS Dapunta is registered. Proposal 481 is added
+24/03/24 12:35:22 REGISTER: ERROR Ahmad_Sodik_Zainuddin is already existed
