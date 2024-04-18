@@ -1,3 +1,4 @@
+// [ MODULE & LIBRARY ]
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -6,8 +7,8 @@
 #include <sys/stat.h>
 #include <dirent.h>
 
+// [ GLOBAL VARIABLE ]
 #define MAX_PATH_LEN 1024
-
 char source_url[] = "https://dl.dropboxusercontent.com/scl/fi/gmy0qvbysh3h7vdexso9k/task_sisop.zip?rlkey=ism9qfjh82awg2tbtzfbrylg4&dl=0";
 char current_path[MAX_PATH_LEN];
 char old_folder_path[MAX_PATH_LEN];
