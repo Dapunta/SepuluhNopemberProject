@@ -10,6 +10,7 @@
 #include <fcntl.h>
 #include <libgen.h>
 #include <time.h>
+#include <regex.h>
 
 // [ GLOBAL VARIABLE ]
 
@@ -33,7 +34,6 @@ void Dump();
 void RemoveDir();
 
 void Task_B();
-void Overlap();
 void ScanFile();
 void Urutkan();
 void YuanFunc();
@@ -41,6 +41,8 @@ void BubuFunc();
 void ImageHandling();
 void ImageDownload();
 void Logger();
+
+void Task_D();
 
 // [ SOAL A ]
 
@@ -185,10 +187,6 @@ void RemoveDir(const char *dirPath) {
 // [ SOAL B dan C ]
 
 void Task_B() {
-    Overlap();
-}
-
-void Overlap() {
     pid_t pid;
     int status;
     ScanFile();
@@ -307,14 +305,73 @@ void Logger(const char *nama, int task_id, int jumlah_image, const char *kategor
     time(&now);
     local_time = localtime(&now);
     strftime(timestamp, sizeof(timestamp), "%Y-%m-%d %H:%M:%S", local_time);
-    FILE *file = fopen("./task/rekap.txt", "a");
+    FILE *file = fopen("./task/recap.txt", "a");
     fprintf(file, "[%s]-[%s] Task %d completed, download %d %s images with %s resolution\n",
             timestamp, nama, task_id, jumlah_image, kategori_image, resolusi);
     fclose(file);
 }
 
+// [ SOAL C ]
+
+// Simpan Sementara Jumlah Gambar Berdasar Jenis
+typedef struct {
+    char genre[20];
+    int count;
+} ImageGenre;
+
+// Sortir Gambar Berdasar Jenis
+void Task_D() {
+    FILE *file;
+    char line[1000];
+    ImageGenre genres[100];
+    int num_genres = 0;
+    file = fopen("./task/recap.txt", "r");
+    while (fgets(line, sizeof(line), file)) {
+        // Mencari Kecocokan Dalam Baris Dengan regex
+        char dicari[100];
+        char *pattern = "download\\s+(.*?)\\s+images";
+        regex_t regex;
+        regmatch_t matches[2];
+        regcomp(&regex, pattern, REG_EXTENDED);
+        char *ptr = line;
+        while (regexec(&regex, ptr, 2, matches, 0) == 0) {
+            int jumlah;
+            char genre[20];
+            int start = matches[1].rm_so;
+            int end = matches[1].rm_eo;
+            sprintf(dicari, "%.*s", end - start, ptr + start);
+            sscanf(dicari, "%d %s", &jumlah, genre);
+
+            // Masukkan Data Ke Struct
+            int found = 0;
+            for (int i = 0; i < num_genres; i++) {
+                if (strcmp(genres[i].genre, genre) == 0) {
+                    genres[i].count += jumlah;
+                    found = 1;
+                    break;}}
+            if (!found && num_genres < 100) {
+                strcpy(genres[num_genres].genre, genre);
+                genres[num_genres].count = jumlah;
+                num_genres++;}
+
+            ptr += end;}
+        regfree(&regex);}
+    fclose(file);
+
+    // Simpan Ke File recap.txt
+    int total_image = 0;
+    FILE *save;
+    save = fopen("./task/recap.txt", "a+");
+    for (int i = 0; i < num_genres; i++) {
+        fprintf(save, "%s: %d images\n", genres[i].genre, genres[i].count);
+        total_image += genres[i].count;}
+    fprintf(save, "total images: %d images\n", total_image);
+    fclose(save);
+}
+
 int main() {
-    Task_A();
-    Task_B();
+    // Task_A();
+    // Task_B();
+    // Task_D();
     return 0;
 }
