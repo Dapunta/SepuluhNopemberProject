@@ -40,6 +40,7 @@ void YuanFunc();
 void BubuFunc();
 void ImageHandling();
 void ImageDownload();
+void Logger();
 
 // [ SOAL A ]
 
@@ -191,17 +192,17 @@ void Overlap() {
     pid_t pid;
     int status;
     ScanFile();
-    pid = fork();
-    if (pid==-1) {
-        perror("Fork failed");
-        exit(EXIT_FAILURE);}
-    if (pid == 0) {
-        BubuFunc();
-        exit(EXIT_FAILURE);}
-    else {
-        YuanFunc();
-        exit(EXIT_FAILURE);}
-    waitpid(pid, &status, 0);
+    for (int i = 0; i < 2; i++) {
+        pid = fork();
+        if (pid == -1) {
+            perror("Fork failed");
+            exit(EXIT_FAILURE);}
+        if (pid == 0) {
+            if (i == 0) {YuanFunc();}
+            else {BubuFunc();}
+            exit(EXIT_SUCCESS);}}
+    for (int i = 0; i < 2; i++) {
+        wait(&status);}
 }
 
 // Membaca Seluruh File Dalam Folder task
@@ -239,7 +240,7 @@ void YuanFunc() {
         char folder_tujuan[MAX_PATH_LEN];
         sprintf(file_ori, "./task/%s", tasks[i]);
         sprintf(folder_tujuan, "./task/Yuan/task%d", i);
-        ImageHandling(file_ori, folder_tujuan);}
+        ImageHandling("Yuan", file_ori, folder_tujuan, i);}
 }
 
 // Fungsi Bubu
@@ -251,16 +252,16 @@ void BubuFunc() {
         char folder_tujuan[MAX_PATH_LEN];
         sprintf(file_ori, "./task/%s", tasks[i]);
         sprintf(folder_tujuan, "./task/Bubu/task%d", i);
-        ImageHandling(file_ori, folder_tujuan);}
+        ImageHandling("Bubu", file_ori, folder_tujuan, i);}
 }
 
-void ImageHandling(const char *file_ori, const char *folder_tujuan) {
+void ImageHandling(const char *nama, const char *file_ori, const char *folder_tujuan, int task_id) {
 
     // Membuat Folder Untuk Tiap Task
     mkdir(folder_tujuan, 0777);
 
     // Download Image
-    ImageDownload(file_ori, folder_tujuan);
+    ImageDownload(nama, file_ori, folder_tujuan, task_id);
 
     // Memindahkan File .txt
     char dest_file[MAX_PATH_LEN];
@@ -269,14 +270,15 @@ void ImageHandling(const char *file_ori, const char *folder_tujuan) {
 }
 
 // Download Image
-void ImageDownload(const char *file_ori, const char *folder_tujuan) {
+void ImageDownload(const char *nama, const char *file_ori, const char *folder_tujuan, int task_id) {
+
     int loop;
     char image_size[100], jenis[100], url[100];
     FILE *file = fopen(file_ori, "r");
     fscanf(file, "%d %s %s", &loop, image_size, jenis);
     fclose(file);
     sprintf(url, "https://source.unsplash.com/random/%s?%s\n", image_size, jenis);
-
+    
     for (int i = 1; i <= loop; i++) {
         char image_name[100];
         sprintf(image_name, "%s/gambar%d.png", folder_tujuan, i);
@@ -291,11 +293,28 @@ void ImageDownload(const char *file_ori, const char *folder_tujuan) {
     }
 
     int status;
-    while (wait(&status) > 0);    
+    while (wait(&status) > 0);
+
+    // Catat Setiap Log
+    Logger(nama, task_id, loop, jenis, image_size);
+}
+
+// Mencatat Ke recap.txt
+void Logger(const char *nama, int task_id, int jumlah_image, const char *kategori_image, const char *resolusi) {
+    time_t now;
+    struct tm *local_time;
+    char timestamp[20];
+    time(&now);
+    local_time = localtime(&now);
+    strftime(timestamp, sizeof(timestamp), "%Y-%m-%d %H:%M:%S", local_time);
+    FILE *file = fopen("./task/rekap.txt", "a");
+    fprintf(file, "[%s]-[%s] Task %d completed, download %d %s images with %s resolution\n",
+            timestamp, nama, task_id, jumlah_image, kategori_image, resolusi);
+    fclose(file);
 }
 
 int main() {
-    // Task_A();
+    Task_A();
     Task_B();
     return 0;
 }
