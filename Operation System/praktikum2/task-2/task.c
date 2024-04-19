@@ -43,6 +43,7 @@ void ImageDownload();
 void Logger();
 
 void Task_D();
+void Task_E();
 
 // [ SOAL A ]
 
