@@ -311,7 +311,7 @@ void Logger(const char *nama, int task_id, int jumlah_image, const char *kategor
     fclose(file);
 }
 
-// [ SOAL C ]
+// [ SOAL D ]
 
 // Simpan Sementara Jumlah Gambar Berdasar Jenis
 typedef struct {
@@ -321,12 +321,14 @@ typedef struct {
 
 // Sortir Gambar Berdasar Jenis
 void Task_D() {
+
     FILE *file;
     char line[1000];
     ImageGenre genres[100];
     int num_genres = 0;
     file = fopen("./task/recap.txt", "r");
     while (fgets(line, sizeof(line), file)) {
+
         // Mencari Kecocokan Dalam Baris Dengan regex
         char dicari[100];
         char *pattern = "download\\s+(.*?)\\s+images";
@@ -334,6 +336,7 @@ void Task_D() {
         regmatch_t matches[2];
         regcomp(&regex, pattern, REG_EXTENDED);
         char *ptr = line;
+
         while (regexec(&regex, ptr, 2, matches, 0) == 0) {
             int jumlah;
             char genre[20];
@@ -369,9 +372,20 @@ void Task_D() {
     fclose(save);
 }
 
+// [ SOAL E ]
+
+// Zip Folder Yuan Dan Bubu
+void Task_E() {
+    char *args[] = {"zip", "-r", "-q", "-9", "./task/submission.zip", "./task/Yuan", "./task/Bubu", NULL};
+    execvp("zip", args);
+    perror("Failed to execute zip command");
+    exit(EXIT_FAILURE);
+}
+
 int main() {
-    // Task_A();
-    // Task_B();
-    // Task_D();
+    Task_A();
+    Task_B();
+    Task_D();
+    Task_E();
     return 0;
 }
