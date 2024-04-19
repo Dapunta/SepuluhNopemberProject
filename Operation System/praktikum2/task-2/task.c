@@ -5,16 +5,25 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <sys/stat.h>
+#include <sys/types.h>
 #include <dirent.h>
+#include <fcntl.h>
+#include <libgen.h>
+#include <time.h>
 
 // [ GLOBAL VARIABLE ]
+
 #define MAX_PATH_LEN 1024
+#define MAX_TASKS 20
+#define MAX_TASK_NAME_LENGTH 256
+#define MAX_FILE_CONTENT_LENGTH 1024
+
 char source_url[] = "https://dl.dropboxusercontent.com/scl/fi/gmy0qvbysh3h7vdexso9k/task_sisop.zip?rlkey=ism9qfjh82awg2tbtzfbrylg4&dl=0";
 char current_path[MAX_PATH_LEN];
 char old_folder_path[MAX_PATH_LEN];
 char new_folder_path[MAX_PATH_LEN];
-
-// [ SOAL A ]
+char tasks[MAX_TASKS][MAX_TASK_NAME_LENGTH];
+int task_count = 0;
 
 void Task_A();
 void SetPath();
@@ -22,6 +31,17 @@ void Download();
 void ExtractZip();
 void Dump();
 void RemoveDir();
+
+void Task_B();
+void Overlap();
+void ScanFile();
+void Urutkan();
+void YuanFunc();
+void BubuFunc();
+void ImageHandling();
+void ImageDownload();
+
+// [ SOAL A ]
 
 void Task_A() {
     char data[MAX_PATH_LEN][MAX_PATH_LEN];
@@ -161,7 +181,121 @@ void RemoveDir(const char *dirPath) {
     rmdir(dirPath);
 }
 
+// [ SOAL B dan C ]
+
+void Task_B() {
+    Overlap();
+}
+
+void Overlap() {
+    pid_t pid;
+    int status;
+    ScanFile();
+    pid = fork();
+    if (pid==-1) {
+        perror("Fork failed");
+        exit(EXIT_FAILURE);}
+    if (pid == 0) {
+        BubuFunc();
+        exit(EXIT_FAILURE);}
+    else {
+        YuanFunc();
+        exit(EXIT_FAILURE);}
+    waitpid(pid, &status, 0);
+}
+
+// Membaca Seluruh File Dalam Folder task
+void ScanFile() {
+    DIR *dir;
+    struct dirent *entry;
+    dir = opendir("./task");
+    while ((entry = readdir(dir)) != NULL) {
+        if (entry->d_type == DT_REG && strstr(entry->d_name, ".txt") != NULL) {
+            strcpy(tasks[task_count], entry->d_name);
+            task_count++;}}
+    Urutkan(tasks);
+    closedir(dir);
+}
+
+// Mengurutkan File .txt Dari 0-19
+void Urutkan(char tasks[][MAX_TASK_NAME_LENGTH]) {
+    for (int i=0; i<task_count-1; i++) {
+        for (int j=0; j<task_count-i-1; j++) {
+            int numA = atoi(strstr(tasks[j], "_") + 1);
+            int numB = atoi(strstr(tasks[j+1], "_") + 1);
+            if (numA > numB) {
+                char temp[MAX_TASK_NAME_LENGTH];
+                strcpy(temp, tasks[j]);
+                strcpy(tasks[j], tasks[j + 1]);
+                strcpy(tasks[j + 1], temp);}}}
+}
+
+// Fungsi Yuan
+void YuanFunc() {
+    mkdir("./task/Yuan", 0777);
+    for (int i = 0; i < task_count / 2; i++) {
+        // printf("Yuan: %s\n", tasks[i]);
+        char file_ori[MAX_PATH_LEN];
+        char folder_tujuan[MAX_PATH_LEN];
+        sprintf(file_ori, "./task/%s", tasks[i]);
+        sprintf(folder_tujuan, "./task/Yuan/task%d", i);
+        ImageHandling(file_ori, folder_tujuan);}
+}
+
+// Fungsi Bubu
+void BubuFunc() {
+    mkdir("./task/Bubu", 0777);
+    for (int i = task_count - 1; i >= task_count / 2; i--) {
+        // printf("Bubu: %s\n", tasks[i]);
+        char file_ori[MAX_PATH_LEN];
+        char folder_tujuan[MAX_PATH_LEN];
+        sprintf(file_ori, "./task/%s", tasks[i]);
+        sprintf(folder_tujuan, "./task/Bubu/task%d", i);
+        ImageHandling(file_ori, folder_tujuan);}
+}
+
+void ImageHandling(const char *file_ori, const char *folder_tujuan) {
+
+    // Membuat Folder Untuk Tiap Task
+    mkdir(folder_tujuan, 0777);
+
+    // Download Image
+    ImageDownload(file_ori, folder_tujuan);
+
+    // Memindahkan File .txt
+    char dest_file[MAX_PATH_LEN];
+    snprintf(dest_file, sizeof(dest_file), "%s/%s", folder_tujuan, basename(strdup(file_ori)));
+    rename(file_ori, dest_file);
+}
+
+// Download Image
+void ImageDownload(const char *file_ori, const char *folder_tujuan) {
+    int loop;
+    char image_size[100], jenis[100], url[100];
+    FILE *file = fopen(file_ori, "r");
+    fscanf(file, "%d %s %s", &loop, image_size, jenis);
+    fclose(file);
+    sprintf(url, "https://source.unsplash.com/random/%s?%s\n", image_size, jenis);
+
+    for (int i = 1; i <= loop; i++) {
+        char image_name[100];
+        sprintf(image_name, "%s/gambar%d.png", folder_tujuan, i);
+        pid_t pid = fork();
+        if (pid == 0) {
+            execlp("wget", "wget", url, "-O", image_name, NULL);
+            perror("execvp");
+            exit(EXIT_FAILURE);}
+        else if (pid < 0) {
+            perror("fork");
+            exit(EXIT_FAILURE);}
+    }
+
+    int status;
+    while (wait(&status) > 0);    
+}
+
 int main() {
-    Task_A();
+    // Task_A();
+    Task_B();
     return 0;
 }
