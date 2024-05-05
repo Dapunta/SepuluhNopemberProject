@@ -1,3 +1,0 @@
-* * * * * /home/anonymous/minute_log.sh                         #menjalankan setiap menit
-59 * * * * /home/anonymous/aggregate_minutes_to_hourly_log.sh   #Menjalankan setiap menit 59 (satu jam sekali)
-59 23 * * * /home/anonymous/backup_metrics.sh                   #setiap 23:59
