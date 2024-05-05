@@ -1,0 +1,1 @@
+0 * * * * chmod +x yu_database.sh && ./yu_database.sh

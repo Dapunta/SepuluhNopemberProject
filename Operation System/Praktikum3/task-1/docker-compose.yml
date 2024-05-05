@@ -1,0 +1,32 @@
+version: "3"
+
+services:
+  tank:
+    build: . # Ganti dengan nama image untuk role Tank
+    command: ["/usr/src/ayamgoreng", "Tank"] # Argumen untuk role Tank
+    scale: 6
+
+  assassin:
+    build: . # Ganti dengan nama image untuk role Assassin
+    command: ["/usr/src/ayamgoreng", "Assassin"] # Argumen untuk role Assassin
+    scale: 6
+
+  fighter:
+    build: . # Ganti dengan nama image untuk role Fighter
+    command: ["/usr/src/ayamgoreng", "Fighter"] # Argumen untuk role Fighter
+    scale: 6
+
+  marksman:
+    build: . # Ganti dengan nama image untuk role Marksman
+    command: ["/usr/src/ayamgoreng", "Marksman"] # Argumen untuk role Marksman
+    scale: 6
+
+  mage:
+    build: . # Ganti dengan nama image untuk role Mage
+    command: ["/usr/src/ayamgoreng", "Mage"] # Argumen untuk role Mage
+    scale: 6
+
+  support:
+    build: . # Ganti dengan nama image untuk role Support
+    command: ["/usr/src/ayamgoreng", "Support"] # Argumen untuk role Support
+    scale: 6

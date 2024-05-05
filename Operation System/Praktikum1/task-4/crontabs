@@ -1,0 +1,11 @@
+# Crontab Download Foto Mingyu --> Failed
+0 5 * * * ./isabel.sh 1
+
+# Crontab Zip --> Failed
+0 10 * * * ./isabel.sh 2
+
+# Crontab Hapus Folder & Zip
+0 2 * * * ./isabel.sh 3
+
+# Crontab Download Gambar Levi & Eren
+0 0 * * * ./isabel.sh 4
