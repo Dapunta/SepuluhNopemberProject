@@ -11,21 +11,35 @@ char* DirektoriSaiki() {
     return container_saiki;
 }
 
+int CheckConnection() {
+    char filename[100], status[100];
+    FILE *file = fopen("/shared/connection.txt", "r");
+    fgets(status, sizeof(status), file);
+    status[strcspn(status, "\n")] = '\0';
+    if (strcmp(status, "connect") == 0) return(1);
+    else return(0);
+}
+
 void TulisPesan(int argc, char *argv[]) {
     char filename[100];
     char *target = argv[2];
     char *dir = DirektoriSaiki();
-    sprintf(filename, "/shared/%s.txt", target);
-    FILE *file = fopen(filename, "w");
-    char *pesan = (char *)malloc(sizeof(char));
-    for (int i = 3; i < argc; i++) {
-        pesan = realloc(pesan, strlen(pesan) + strlen(argv[i]) + 2);
-        strcat(pesan, argv[i]);
-        strcat(pesan, " ");}
-    printf("Pesan berhasil dikirim\n");
-    fprintf(file, "%sfrom %s", pesan, dir);
-    fclose(file);
-    free(pesan);
+    int isConnect = CheckConnection();
+    if (isConnect  == 1) {
+        sprintf(filename, "/shared/%s.txt", target);
+        FILE *file = fopen(filename, "w");
+        char *pesan = (char *)malloc(sizeof(char));
+        for (int i = 3; i < argc; i++) {
+            pesan = realloc(pesan, strlen(pesan) + strlen(argv[i]) + 2);
+            strcat(pesan, argv[i]);
+            strcat(pesan, " ");}
+        printf("Pesan berhasil dikirim\n");
+        fprintf(file, "%sfrom %s", pesan, dir);
+        fclose(file);
+        free(pesan);}
+    else {
+        printf("Pesan gagal dikirim\n");
+    }
     free(dir);
 }
 
