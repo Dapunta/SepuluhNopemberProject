@@ -34,18 +34,22 @@ void Login(char *container) {
 
 // Connect 2 Container
 void Connect(char *container1, char *container2) {
-    char arg1[100], arg2[100], arg3[100];
+    char arg1[100], arg2[100], arg3[100], arg4[100], arg5[100];
     sprintf(arg1, "docker network create %s", networks); system(arg1);
     sprintf(arg2, "docker network connect %s %s", networks, container1); system(arg2);
     sprintf(arg3, "docker network connect %s %s", networks, container2); system(arg3);
+    sprintf(arg4, "docker exec -it %s sh -c 'echo \"connect\" > /shared/connection.txt'", container1); system(arg4);
+    sprintf(arg5, "docker exec -it %s sh -c 'echo \"connect\" > /shared/connection.txt'", container2); system(arg5);
 }
 
 // Disconnect 2 Container
 void Disconnect(char *container1, char *container2) {
-    char arg1[100], arg2[100], arg3[100];
+    char arg1[100], arg2[100], arg3[100], arg4[100], arg5[100];
     sprintf(arg1, "docker network disconnect %s %s", networks, container1); system(arg1);
     sprintf(arg2, "docker network disconnect %s %s", networks, container2); system(arg2);
     sprintf(arg3, "docker network rm %s", networks); system(arg3);
+    sprintf(arg4, "docker exec -it %s sh -c 'echo \"disconnect\" > /shared/connection.txt'", container1); system(arg4);
+    sprintf(arg5, "docker exec -it %s sh -c 'echo \"disconnect\" > /shared/connection.txt'", container2); system(arg5);
 }
 
 // Reset (Biar Gampang)
